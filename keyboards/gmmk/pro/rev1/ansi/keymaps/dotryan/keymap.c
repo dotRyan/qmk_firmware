@@ -39,23 +39,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Press Fn+N to toggle between 6KRO and NKRO. This setting is persisted to the EEPROM and thus persists between restarts.
     [0] = LAYOUT(
         KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PSCR,          KC_MUTE,
-        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,          KC_INS,
-        KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,          KC_HOME,
-        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_END,
-        KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, KC_UP,   KC_DEL,
+        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,          KC_DEL,
+        KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,          KC_PGUP,
+        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_PGDN,
+        KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, KC_UP,   KC_END,
         KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             KC_RALT, MO(1),   KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT
     ),
 
     [1] = LAYOUT(
-        RGB_TOG, KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,  _______,          _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, RGB_HUI, RGB_SAI, RGB_VAD, RGB_VAI, _______,          _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,          KC_PGUP,
-        _______, _______, _______, _______, _______, _______, _______, KC_MPRV, KC_MPLY, KC_MNXT, _______, _______,          _______,          KC_PGDN,
-        _______,          _______, _______, _______, _______, _______, _______, KC_APP , _______, _______, _______,          _______, KC_PGUP, _______,
+        RGB_TOG, KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,  KC_SCRL,           _______,
+        _______, _______, _______, _______, _______, _______, _______, RGB_MOD, RGB_SPI, RGB_HUI, RGB_SAI, RGB_VAD, RGB_VAI, _______,          KC_INS,
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,          _______,
+        _______, _______, _______, _______, _______, _______, _______, KC_MPRV, KC_MPLY, KC_MNXT, _______, _______,          _______,          _______,
+        _______,          _______, _______, _______, _______, _______, _______, KC_APP , _______, _______, _______,          _______, KC_PGUP, KC_HOME,
         _______, _______, _______,                            _______,                            _______, _______, _______, KC_HOME, KC_PGDN, KC_END
     ),
 
-
+// KC_INS
 };
 // clang-format on
 
@@ -84,6 +84,8 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 #ifdef RGB_MATRIX_ENABLE
 static void set_rgb_caps_leds(void);
+static uint8_t get_current_brightness(void);
+static void set_rgb_scroll_lock_leds(void);
 
 // RGB led number layout, function of the key
 
@@ -95,18 +97,58 @@ static void set_rgb_caps_leds(void);
 //  83, led 06   5, Ct_L   11,Win_L   17, Alt_L                     33, SPACE                     49, Alt_R   55, FN             65, Ct_R   95, Left   97, Down      79, Right      84, led 17
 //  87, led 07                                                                                                                                                                      88, led 18
 //  91, led 08     
-static void set_rgb_caps_leds(){
+
+uint8_t CAPS_LOCK_LEDS[] = {
+     6, //F1
+    12, //F2 
+    18, //F3
+    23, //F4
+    28, //F5
+    34, //F6
+    39, //F7
+    44, //F8
+    50, //F9
+    56, //F10
+    61, //F11
+    66  //F12
+};
+
+uint8_t SCROLL_LOCK_LEDS[] = {
+    72, //Home 
+    75, //PgUp 
+    86, //PgDn 
+    82, //End  
+};
+
+static uint8_t get_current_brightness(){
      uint8_t value = rgblight_get_val();
      if(value < 64){
         value = 192;
      }else if(value < 128){
         value = 128;
      }
-     HSV hsv = {0, 255, value};
-     RGB rgb = hsv_to_rgb(hsv);
-
-    rgb_matrix_set_color(3, rgb.r, rgb.g, rgb.b);
+     return value;
 }
+
+
+static void set_rgb_caps_leds(){
+
+     HSV hsv = {0, 255, get_current_brightness()};
+     RGB rgb = hsv_to_rgb(hsv);
+    for(uint8_t i=0; i < sizeof(CAPS_LOCK_LEDS); i++ ){
+        rgb_matrix_set_color(CAPS_LOCK_LEDS[i], rgb.r, rgb.g, rgb.b);
+    }
+}
+
+static void set_rgb_scroll_lock_leds(){
+
+     HSV hsv = {0, 255, get_current_brightness()};
+     RGB rgb = hsv_to_rgb(hsv);
+    for(uint8_t i=0; i < sizeof(SCROLL_LOCK_LEDS); i++ ){
+        rgb_matrix_set_color(SCROLL_LOCK_LEDS[i], rgb.r, rgb.g, rgb.b);
+    }
+}
+
 
 
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
@@ -114,22 +156,26 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
          set_rgb_caps_leds();
     }
 
+        if (host_keyboard_led_state().scroll_lock) {
+         set_rgb_scroll_lock_leds();
+    }
 
-    // if (get_highest_layer(layer_state) > 0) {
-    //     uint8_t layer = get_highest_layer(layer_state);
+ // color only the leds that have an FN key pressed
+ // if (get_highest_layer(layer_state) > 0) {
+ //        uint8_t layer = get_highest_layer(layer_state);
 
-    //     for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
-    //         for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-    //             uint8_t index = g_led_config.matrix_co[row][col];
+ //        for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+ //            for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+ //                uint8_t index = g_led_config.matrix_co[row][col];
 
-    //             rgb_matrix_set_color(index, RGB_OFF);
-    //             if (index >= led_min && index <= led_max && index != NO_LED &&
-    //             keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
-    //                 rgb_matrix_set_color(index, RGB_PURPLE);
-    //             }
-    //         }
-    //     }
-    // }
+
+ //                if (index >= led_min && index <= led_max && index != NO_LED &&
+ //                keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
+ //                    rgb_matrix_set_color(index, RGB_PURPLE);
+ //                }
+ //            }
+ //        }
+ //    }
 
 }
 
