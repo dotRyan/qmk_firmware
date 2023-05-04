@@ -15,11 +15,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 
+
+
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-//      ESC      F1       F2       F3       F4       F5       F6       F7       F8       F9       F10      F11      F12	     Prt           Rotary(Mute)
-//      ~        1        2        3        4        5        6        7        8        9        0         -       (=)	     BackSpc           Del
+//      ESC      F1       F2       F3       F4       F5       F6       F7       F8       F9       F10      F11      F12	     Del           Rotary(Mute)
+//      ~        1        2        3        4        5        6        7        8        9        0         -       (=)	     BackSpc           Home
 //      Tab      Q        W        E        R        T        Y        U        I        O        P        [        ]        \                 PgUp
 //      Caps     A        S        D        F        G        H        J        K        L        ;        "                 Enter             PgDn
 //      Sh_L              Z        X        C        V        B        N        M        ,        .        ?                 Sh_R     Up       End
@@ -38,24 +40,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Since this is, among other things, a "gaming" keyboard, a key combination to enable NKRO on the fly is provided for convenience.
     // Press Fn+N to toggle between 6KRO and NKRO. This setting is persisted to the EEPROM and thus persists between restarts.
     [0] = LAYOUT(
-        KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PSCR,          KC_MUTE,
-        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,          KC_DEL,
-        KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,          KC_PGUP,
-        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_PGDN,
-        KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, KC_UP,   KC_END,
+        KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,           KC_MUTE,
+        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,          KC_HOME,
+        KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,          KC_END,
+        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_PGUP,
+        KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, KC_UP,   KC_PGDN,
         KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             KC_RALT, MO(1),   KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT
     ),
-
     [1] = LAYOUT(
-        RGB_TOG, KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,  KC_SCRL,           _______,
-        _______, _______, _______, _______, _______, _______, _______, RGB_MOD, RGB_SPI, RGB_HUI, RGB_SAI, RGB_VAD, RGB_VAI, _______,          KC_INS,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,          _______,
+        RGB_TOG, KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,  KC_INS,           _______,
+        _______, _______, _______, _______, _______, _______, _______, RGB_MOD, RGB_SPI, RGB_HUI, RGB_SAI, _______, _______, _______,          KC_PSCR,
+        _______, _______, _______, _______, NK_TOGG, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,          _______,
         _______, _______, _______, _______, _______, _______, _______, KC_MPRV, KC_MPLY, KC_MNXT, _______, _______,          _______,          _______,
-        _______,          _______, _______, _______, _______, _______, _______, KC_APP , _______, _______, _______,          _______, KC_PGUP, KC_HOME,
-        _______, _______, _______,                            _______,                            _______, _______, _______, KC_HOME, KC_PGDN, KC_END
+        _______,          _______, _______, _______, _______, _______, _______, KC_APP , _______, _______, KC_SCRL,          _______, KC_PGUP, _______,
+        _______, _______, _______,                            KC_PSCR,                            _______, _______, _______, KC_HOME, KC_PGDN, KC_END
     ),
 
-// KC_INS
+
 };
 // clang-format on
 
@@ -85,6 +86,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 #ifdef RGB_MATRIX_ENABLE
 static void set_rgb_caps_leds(void);
 static uint8_t get_current_brightness(void);
+static uint8_t get_flipped_hue(void);
 static void set_rgb_scroll_lock_leds(void);
 
 // RGB led number layout, function of the key
@@ -118,6 +120,13 @@ uint8_t SCROLL_LOCK_LEDS[] = {
     75, //PgUp 
     86, //PgDn 
     82, //End  
+    68, //led 12
+    71, //led 13
+    74, //led 14
+    77, //led 15
+    81, //led 16
+    84, //led 17
+    88, //led 18
 };
 
 static uint8_t get_current_brightness(){
@@ -130,10 +139,19 @@ static uint8_t get_current_brightness(){
      return value;
 }
 
+static uint8_t get_flipped_hue(){
+    uint8_t hue = rgblight_get_hue();
+    uint8_t value = hue + 127;
+    if(value > 255){
+        return value - 255;
+    }
+    return value;
+}
+
 
 static void set_rgb_caps_leds(){
 
-     HSV hsv = {0, 255, get_current_brightness()};
+     HSV hsv = {get_flipped_hue(), rgblight_get_sat(), get_current_brightness()};
      RGB rgb = hsv_to_rgb(hsv);
     for(uint8_t i=0; i < sizeof(CAPS_LOCK_LEDS); i++ ){
         rgb_matrix_set_color(CAPS_LOCK_LEDS[i], rgb.r, rgb.g, rgb.b);
@@ -142,7 +160,7 @@ static void set_rgb_caps_leds(){
 
 static void set_rgb_scroll_lock_leds(){
 
-     HSV hsv = {0, 255, get_current_brightness()};
+     HSV hsv = {get_flipped_hue(), rgblight_get_sat(), get_current_brightness()};
      RGB rgb = hsv_to_rgb(hsv);
     for(uint8_t i=0; i < sizeof(SCROLL_LOCK_LEDS); i++ ){
         rgb_matrix_set_color(SCROLL_LOCK_LEDS[i], rgb.r, rgb.g, rgb.b);
