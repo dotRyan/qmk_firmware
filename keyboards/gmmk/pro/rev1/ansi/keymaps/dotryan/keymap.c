@@ -48,8 +48,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             KC_RALT, MO(1),   KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT
     ),
     [1] = LAYOUT(
-        RGB_TOG, KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,  KC_INS,           _______,
-        _______, _______, _______, _______, _______, _______, _______, RGB_MOD, RGB_SPI, RGB_HUI, RGB_SAI, _______, _______, KC_DEL,           KC_SCRL,
+        RM_TOGG, KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,  KC_INS,           _______,
+        _______, _______, _______, _______, _______, _______, _______, RM_NEXT, RM_SPDU, RM_HUEU, RM_SATU, _______, _______, KC_DEL,           KC_SCRL,
         _______, _______, _______, _______, NK_TOGG, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,          _______,
         _______, _______, _______, _______, _______, _______, _______, KC_MPRV, KC_MPLY, KC_MNXT, _______, _______,          _______,          _______,
         _______,          _______, _______, _______, _______, _______, _______, KC_APP , _______, _______, KC_SCRL,          _______, KC_PGUP, _______,
@@ -58,6 +58,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 };
+
+
+socd_cleaner_t socd_opposing_pairs[] = {
+  {{KC_W, KC_S}, SOCD_CLEANER_LAST},
+  {{KC_A, KC_D}, SOCD_CLEANER_LAST},
+};
+
 // clang-format on
 
 #ifdef ENCODER_ENABLE
@@ -135,10 +142,10 @@ uint8_t NO_GUI_LEDS[] = {
     5, //Ct_L 
     11, //Home
     17, //Alt_L    
-    14, //W
-    9, //A
-    15, //S
-    21, //D
+    //14, //W
+    //9, //A
+    //15, //S
+    //21, //D
 };
 
 
@@ -227,7 +234,11 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 }
 
 
+layer_state_t layer_state_set_user(layer_state_t state) {
+  socd_cleaner_enabled = keymap_config.no_gui;
+  return state;
+}
+
+
 #endif //RGB_MATRIX_ENABLE
-
-
 

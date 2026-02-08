@@ -40,7 +40,82 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_GRV,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,    _______,  KC_INS,
   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  KC_PSCR,  KC_SCRL,  KC_PAUS,   _______,  _______,
   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,             _______,
-  _______,  RGB_HUI,  RGB_HUD,  RGB_SPD,  RGB_SPI,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_MPRV,  KC_MPLY,  KC_MNXT,  _______,             RGB_VAI,  KC_HOME,
-  QK_BOOT,  _______,  _______,                                _______,                                _______,  _______,  RGB_RMOD,  RGB_VAD,  RGB_MOD
+  _______,  RM_HUEU,  RM_HUED,  RM_SPDD,  RM_SPDU,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_MPRV,  KC_MPLY,  KC_MNXT,  _______,             RM_VALU,  KC_HOME,
+  QK_BOOT,  _______,  _______,                                _______,                                _______,  _______,  RM_PREV,  RM_VALD,  RM_NEXT
   )
 };
+
+
+
+
+
+#ifdef RGB_MATRIX_ENABLE
+
+static void set_rgb_caps_leds(void);
+static uint8_t get_current_brightness(void);
+static uint8_t get_flipped_hue(void);
+static void set_rgb_scroll_lock_leds(void);
+
+
+uint8_t CAPS_LOCK_LEDS[] = {
+     30, //CAPS
+};
+
+uint8_t SCROLL_LOCK_LEDS[] = {
+};
+
+
+static uint8_t get_current_brightness(){
+     uint8_t value = rgblight_get_val();
+     if(value < 64){
+        value = 192;
+     }else if(value < 128){
+        value = 128;
+     }
+     return value;
+}
+
+static uint8_t get_flipped_hue(){
+    uint8_t hue = rgblight_get_hue();
+    uint8_t value = hue + 127;
+    if(value > 255){
+        return value - 255;
+    }
+    return value;
+}
+
+
+
+static void set_rgb_caps_leds(){
+
+     HSV hsv = {get_flipped_hue(), rgblight_get_sat(), get_current_brightness()};
+     RGB rgb = hsv_to_rgb(hsv);
+    for(uint8_t i=0; i < sizeof(CAPS_LOCK_LEDS); i++ ){
+        rgb_matrix_set_color(CAPS_LOCK_LEDS[i], rgb.r, rgb.g, rgb.b);
+    }
+}
+
+
+static void set_rgb_scroll_lock_leds(){
+
+     HSV hsv = {get_flipped_hue(), rgblight_get_sat(), get_current_brightness()};
+     RGB rgb = hsv_to_rgb(hsv);
+    for(uint8_t i=0; i < sizeof(SCROLL_LOCK_LEDS); i++ ){
+        rgb_matrix_set_color(SCROLL_LOCK_LEDS[i], rgb.r, rgb.g, rgb.b);
+    }
+}
+
+
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (host_keyboard_led_state().caps_lock) {
+         set_rgb_caps_leds();
+    }
+
+        if (host_keyboard_led_state().scroll_lock) {
+         set_rgb_scroll_lock_leds();
+    }
+
+    return false;
+}
+#endif //RGB_MATRIX_ENABLE
